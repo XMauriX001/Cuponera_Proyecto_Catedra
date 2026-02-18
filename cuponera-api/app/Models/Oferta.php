@@ -13,6 +13,7 @@ class Oferta extends Model
 
     protected $fillable = [
         'empresa_id',
+        'rubro_id',
         'titulo',
         'precio_regular',
         'precio_oferta',
