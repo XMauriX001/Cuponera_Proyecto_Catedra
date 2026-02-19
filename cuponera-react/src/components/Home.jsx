@@ -5,27 +5,27 @@ export function Home() {
     const [rubros, setRubros] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // 1. Respaldo general para ofertas 
+    //Respaldo general para ofertas 
     const imagenesRubros = {
-        'Restaurantes': '/images/respaldo-restaurant.jpeg', 
+        'Restaurantes': '/images/respaldo-restaurant.jpeg',
         'Talleres': '/images/respaldo-talleres.jpeg',
         'Salones de Belleza': '/images/respaldo-belleza.jpeg',
         'Entretenimiento': '/images/respaldo-entretenimiento.jpeg',
-        'Default': '/images/default-oferta.jpg' 
+        'Default': '/images/default-oferta.jpg'
     };
 
-    // 2. Diccionario de fotos de las promociones existentes 
-    
+    // Diccionario de fotos de las promociones existentes 
+
     const imagenesPorOferta = {
         '2x1 en Pizzas Medianas': '/images/pizza-2x1.png',
         'Combo Familiar': '/images/pizza-familiar.jpeg',
         'Combo Personal': '/images/pizza-personal.jpeg',
-        'Corte + Tinte': '/images/corte-tinte.png',       
+        'Corte + Tinte': '/images/corte-tinte.png',
         'Manicure + Pedicure': '/images/manicure-pedicuree.jpeg',
-        'Alisado Permanente + Corte' : '/images/alisado-corte.jpeg',
-        '2 Boletos + Palomitas' : '/images/boletos-palomitas.jpeg',
-        '4 Boletos + Combo Familiar' : '/images/boletos-familiar.jpeg',
-        'Pase VIP Todo el Día' : '/images/vip-pass.jpeg'
+        'Alisado Permanente + Corte': '/images/alisado-corte.jpeg',
+        '2 Boletos + Palomitas': '/images/boletos-palomitas.jpeg',
+        '4 Boletos + Combo Familiar': '/images/boletos-familiar.jpeg',
+        'Pase VIP Todo el Día': '/images/vip-pass.jpeg'
     };
 
     //Se creó para completar la simetría del diseño
@@ -64,6 +64,29 @@ export function Home() {
         </div>
     );
 
+    // Función para comprar
+    const comprarCupon = async (ofertaId, precioOferta) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Debes iniciar sesión para comprar');
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await api.post('/cupones', {
+                oferta_id: ofertaId,
+                precio_pagado: precioOferta
+            });
+
+            alert(`¡Cupón comprado! Código: ${response.data.cupon.codigo}`);
+            navigate('/mis-cupones');
+        } catch (error) {
+            alert(error.response?.data?.message || 'Error al comprar cupón');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50/50">
             {/* Sección bienvenida */}
@@ -91,20 +114,20 @@ export function Home() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                             {rubro.ofertas.map(oferta => (
                                 <div key={oferta.id} className="flex flex-col bg-white rounded-3xl sm:rounded-4xl border-2 border-gray-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                                    
-                                    
+
+
                                     <div className="aspect-16/10 sm:h-56 relative bg-gray-200">
-                                        <img 
+                                        <img
                                             // Se utiliza en caso que no descubra ninguna imagen y ponga un fondo vacio
-                                            src={imagenesPorOferta[oferta.titulo] || imagenesRubros[rubro.nombre] || imagenesRubros['Default']} 
+                                            src={imagenesPorOferta[oferta.titulo] || imagenesRubros[rubro.nombre] || imagenesRubros['Default']}
                                             alt={oferta.titulo}
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
-                                                e.target.style.display = 'none'; 
+                                                e.target.style.display = 'none';
                                                 e.target.parentNode.style.backgroundColor = '#e5e7eb';
                                             }}
                                         />
-                                        
+
                                     </div>
 
                                     {/* Datos de las ofertas */}
@@ -125,7 +148,9 @@ export function Home() {
                                                     ${oferta.precio_oferta}
                                                 </span>
                                             </div>
-                                            <button className="bg-blue-600 hover:bg-black text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95">
+                                            <button
+                                                onClick={() => comprarCupon(oferta.id, oferta.precio_oferta)}
+                                                className="bg-blue-600 hover:bg-black text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95">
                                                 Comprar
                                             </button>
                                         </div>
