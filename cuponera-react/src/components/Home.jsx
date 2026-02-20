@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
+import { useNavigate } from 'react-router';
 
 export function Home() {
+    const navigate = useNavigate();
     const [rubros, setRubros] = useState([]);
     const [loading, setLoading] = useState(true);
 
