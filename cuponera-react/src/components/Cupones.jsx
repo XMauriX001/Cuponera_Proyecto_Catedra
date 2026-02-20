@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const Cupones = () => {
-    // Datos cargados desde la base de datos
     const navigate = useNavigate();
     const [cupones, setCupones] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,6 +16,7 @@ const Cupones = () => {
 
         api.get('/cupones')
             .then(response => {
+                console.log('Cupones recibidos:', response.data); // Para debug
                 setCupones(response.data);
                 setLoading(false);
             })
@@ -37,7 +37,11 @@ const Cupones = () => {
         );
     }
 
-    const categorias = ['Disponible', 'Canjeado', 'Vencido'];
+    const categorias = [
+        { valor: 'disponible', titulo: 'Disponibles' },
+        { valor: 'canjeado', titulo: 'Canjeados' },
+        { valor: 'vencido', titulo: 'Vencidos' }
+    ];
 
     return (
         <div className="space-y-10">
@@ -47,19 +51,19 @@ const Cupones = () => {
             </header>
 
             {categorias.map((cat) => {
-                const cuponesCategoria = cupones.filter(c => c.estado === cat);
+                const cuponesCategoria = cupones.filter(c => c.estado === cat.valor);
 
                 return (
-                    <section key={cat}>
-                        <h2 className={`text-xl font-bold mb-4 flex items-center ${cat === 'disponible' ? 'text-green-600' : 'text-gray-500'
+                    <section key={cat.valor}>
+                        <h2 className={`text-xl font-bold mb-4 flex items-center ${cat.valor === 'disponible' ? 'text-green-600' : 'text-gray-500'
                             }`}>
-                            <span className={`w-3 h-3 rounded-full mr-2 ${cat === 'disponible' ? 'bg-green-600' : 'bg-gray-400'
+                            <span className={`w-3 h-3 rounded-full mr-2 ${cat.valor === 'disponible' ? 'bg-green-600' : 'bg-gray-400'
                                 }`}></span>
-                            Cupones {cat.charAt(0).toUpperCase() + cat.slice(1)}s
+                            Cupones {cat.titulo}
                         </h2>
 
                         {cuponesCategoria.length === 0 ? (
-                            <p className="text-gray-400 text-sm italic">No tienes cupones {cat}s</p>
+                            <p className="text-gray-400 text-sm italic">No tienes cupones {cat.titulo.toLowerCase()}</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {cuponesCategoria.map(cupon => (
@@ -75,14 +79,14 @@ const Cupones = () => {
                                                 </p>
                                             </div>
 
-                                            {cat === 'disponible' && (
+                                            {cat.valor === 'disponible' && (
                                                 <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition-all shadow-lg shadow-blue-100">
                                                     Descargar PDF
                                                 </button>
                                             )}
                                         </div>
                                         <div className="mt-4 pt-4 border-t border-gray-50 text-[10px] text-gray-400 font-bold uppercase">
-                                            {cat === 'vencido' ? 'Expiró el' : 'Comprado el'}: {new Date(cupon.fecha_compra).toLocaleDateString('es-SV')}
+                                            {cat.valor === 'vencido' ? 'Expiró el' : 'Comprado el'}: {new Date(cupon.fecha_compra).toLocaleDateString('es-SV')}
                                         </div>
                                     </div>
                                 ))}
@@ -95,4 +99,4 @@ const Cupones = () => {
     );
 };
 
-export default Cupones; 
+export default Cupones;
