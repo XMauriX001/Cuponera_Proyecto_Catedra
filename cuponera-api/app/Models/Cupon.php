@@ -9,6 +9,7 @@ class Cupon extends Model
 {
     use HasFactory;
 
+    protected $table = 'cupones';
     protected $fillable = [
         'codigo',
         'cliente_id',
@@ -22,12 +23,11 @@ class Cupon extends Model
     // Un cupón pertenece a un cliente
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class);
+        return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
-    // Un cupón pertenece a una oferta
     public function oferta()
     {
-        return $this->belongsTo(Oferta::class);
+        return $this->belongsTo(Oferta::class, 'oferta_id');
     }
 }
