@@ -30,14 +30,14 @@ function Navbar() {
                         LA CUPONERA<span className="text-orange-500">.sv</span>
                     </Link>
 
-                    {/* Menú desktop */}
+
                     <div className="hidden md:flex space-x-8 items-center font-medium text-sm">
                         <Link to="/" className="text-gray-700 hover:text-blue-600">Ofertas</Link>
 
                         {token ? (
                             <>
                                 <Link to="/mis-cupones" className="text-gray-700 hover:text-blue-600">Mis Cupones</Link>
-                                <span className="text-gray-700">Hola, {user?.nombres}</span>
+
                                 <button
                                     onClick={handleLogout}
                                     className="bg-red-600 text-white px-5 py-2 rounded-full hover:bg-red-700 transition">
@@ -54,7 +54,6 @@ function Navbar() {
                         )}
                     </div>
 
-                    {/* Botón hamburguesa móvil */}
                     <div className="md:hidden flex items-center">
                         <button
                             onClick={() => setMenuAbierto(!menuAbierto)}
@@ -71,7 +70,6 @@ function Navbar() {
                 </div>
             </div>
 
-            {/* Menú móvil desplegable */}
             {menuAbierto && (
                 <div className="md:hidden bg-white border-t border-gray-100 animate-fade-in">
                     <div className="px-4 pt-2 pb-6 space-y-1 shadow-lg">
