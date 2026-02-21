@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { useNavigate } from 'react-router';
+import ModoPago from "../components/ModoPago";
 
 export function Home() {
     const navigate = useNavigate();
     const [rubros, setRubros] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [mostrarPago, setMostrarPago] = useState(false);
+    const [ofertaSeleccionada, setOfertaSeleccionada] = useState(null);
 
     //Respaldo general para ofertas 
     const imagenesRubros = {
@@ -33,14 +36,14 @@ export function Home() {
     //Se creó para completar la simetría del diseño
     const ofertasExtra = {
         'Restaurantes': [
-            { id: 'temp-1', titulo: 'Combo Personal', descripcion: '1 Pizza personal + bebida + acompañamiento', precio_regular: 10.00, precio_oferta: 4.99, fecha_limite: '2026-03-01' }
+            { id: 'temp-1', titulo: 'Combo Personal', descripcion: '1 Pizza personal + bebida + acompañamiento', precio_regular: 10.00, precio_oferta: 4.99, fecha_fin: '2026-03-01' }
         ],
         'Salones de Belleza': [
-            { id: 'temp-2', titulo: 'Alisado Permanente + Corte', descripcion: 'Tratamiento completo de hidratación y corte de puntas', precio_regular: 60.00, precio_oferta: 29.99, fecha_limite: '2026-03-05' }
+            { id: 'temp-2', titulo: 'Alisado Permanente + Corte', descripcion: 'Tratamiento completo de hidratación y corte de puntas', precio_regular: 60.00, precio_oferta: 29.99, fecha_fin: '2026-03-05' }
         ],
         'Entretenimiento': [
-            { id: 'temp-3', titulo: '4 Boletos + Combo Familiar', descripcion: 'Entradas válidas para cualquier función 2D + combo gigante', precio_regular: 40.00, precio_oferta: 25.00, fecha_limite: '2026-03-10' },
-            { id: 'temp-4', titulo: 'Pase VIP Todo el Día', descripcion: 'Acceso ilimitado a juegos mecánicos y área de comida', precio_regular: 30.00, precio_oferta: 15.00, fecha_limite: '2026-03-12' }
+            { id: 'temp-3', titulo: '4 Boletos + Combo Familiar', descripcion: 'Entradas válidas para cualquier función 2D + combo gigante', precio_regular: 40.00, precio_oferta: 25.00, fecha_fin: '2026-03-10' },
+            { id: 'temp-4', titulo: 'Pase VIP Todo el Día', descripcion: 'Acceso ilimitado a juegos mecánicos y área de comida', precio_regular: 30.00, precio_oferta: 15.00, fecha_fin: '2026-03-12' }
         ]
     };
 
@@ -80,6 +83,9 @@ export function Home() {
             const response = await api.post('/cupones', {
                 oferta_id: ofertaId,
                 precio_pagado: precioOferta
+            },
+            {
+                headers: { Authorization: `Bearer ${token}`}
             });
 
             alert(`¡Cupón comprado! Código: ${response.data.cupon.codigo}`);
@@ -88,6 +94,19 @@ export function Home() {
             alert(error.response?.data?.message || 'Error al comprar cupón');
         }
     };
+
+    const confirmarPagoYComprar = () => {
+
+        if (!ofertaSeleccionada) return;
+
+        comprarCupon(
+            ofertaSeleccionada.id,
+            ofertaSeleccionada.precio_oferta
+        );
+
+        setMostrarPago(false);
+    };
+
 
     return (
         <div className="min-h-screen bg-gray-50/50">
@@ -151,16 +170,19 @@ export function Home() {
                                                 </span>
                                             </div>
                                             <button
-                                                onClick={() => comprarCupon(oferta.id, oferta.precio_oferta)}
+                                                 onClick={() => {
+                                                    setOfertaSeleccionada(oferta);
+                                                    setMostrarPago(true);
+                                                }}
                                                 className="bg-blue-600 hover:bg-black text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95">
-                                                Comprar
+                                                Comprar 
                                             </button>
                                         </div>
 
                                         <div className="pt-4 border-t border-gray-50 flex justify-between text-[9px] font-black text-gray-300 uppercase">
                                             <span className="flex items-center">
                                                 <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                Vence: {oferta.fecha_limite}
+                                                Vence: {oferta.fecha_fin}
                                             </span>
                                             <span className="text-orange-400">Vigente</span>
                                         </div>
@@ -171,6 +193,13 @@ export function Home() {
                     </section>
                 ))}
             </div>
+            {mostrarPago && ofertaSeleccionada && (
+                <ModoPago
+                    oferta={ofertaSeleccionada}
+                    onClose={() => setMostrarPago(false)}
+                    onConfirmarPago={confirmarPagoYComprar}
+                />
+            )}
         </div>
     );
 }
