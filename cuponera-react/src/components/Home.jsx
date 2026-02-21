@@ -33,28 +33,11 @@ export function Home() {
         'Pase VIP Todo el Día': '/images/vip-pass.jpeg'
     };
 
-    //Se creó para completar la simetría del diseño
-    const ofertasExtra = {
-        'Restaurantes': [
-            { id: 'temp-1', titulo: 'Combo Personal', descripcion: '1 Pizza personal + bebida + acompañamiento', precio_regular: 10.00, precio_oferta: 4.99, fecha_fin: '2026-03-01' }
-        ],
-        'Salones de Belleza': [
-            { id: 'temp-2', titulo: 'Alisado Permanente + Corte', descripcion: 'Tratamiento completo de hidratación y corte de puntas', precio_regular: 60.00, precio_oferta: 29.99, fecha_fin: '2026-03-05' }
-        ],
-        'Entretenimiento': [
-            { id: 'temp-3', titulo: '4 Boletos + Combo Familiar', descripcion: 'Entradas válidas para cualquier función 2D + combo gigante', precio_regular: 40.00, precio_oferta: 25.00, fecha_fin: '2026-03-10' },
-            { id: 'temp-4', titulo: 'Pase VIP Todo el Día', descripcion: 'Acceso ilimitado a juegos mecánicos y área de comida', precio_regular: 30.00, precio_oferta: 15.00, fecha_fin: '2026-03-12' }
-        ]
-    };
 
     useEffect(() => {
         api.get('/ofertas')
             .then(response => {
-                const datosConRelleno = response.data.map(rubro => ({
-                    ...rubro,
-                    ofertas: [...rubro.ofertas, ...(ofertasExtra[rubro.nombre] || [])]
-                }));
-                setRubros(datosConRelleno);
+                setRubros(response.data);
                 setLoading(false);
             })
             .catch(error => {
@@ -84,9 +67,9 @@ export function Home() {
                 oferta_id: ofertaId,
                 precio_pagado: precioOferta
             },
-            {
-                headers: { Authorization: `Bearer ${token}`}
-            });
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
 
             alert(`¡Cupón comprado! Código: ${response.data.cupon.codigo}`);
             navigate('/mis-cupones');
@@ -170,12 +153,12 @@ export function Home() {
                                                 </span>
                                             </div>
                                             <button
-                                                 onClick={() => {
+                                                onClick={() => {
                                                     setOfertaSeleccionada(oferta);
                                                     setMostrarPago(true);
                                                 }}
                                                 className="bg-blue-600 hover:bg-black text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95">
-                                                Comprar 
+                                                Comprar
                                             </button>
                                         </div>
 
