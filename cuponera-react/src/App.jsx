@@ -1,25 +1,25 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/NavBar';
-import Home from './components/Home';
-import Login from './components/Login';
-import Register from './components/Register';
-import Cupones from './components/Cupones';
+import MainLayout from './layouts/MainLayout';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Cupones from './pages/Cupones';
+import ModoPago from './pages/ModoPago';
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-        <Navbar />
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/mis-cupones" element={<Cupones />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        {/* Ruta principal que usa el Layout */}
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="mis-cupones" element={<Cupones />} />
+          <Route path="pago" element={<ModoPago />} />
+          
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }

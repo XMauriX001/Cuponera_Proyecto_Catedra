@@ -154,3 +154,5 @@ export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
     </div>
   );
 }
+
+
