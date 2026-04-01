@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Notification } from '../components/Notification';
 
 export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
 
@@ -7,6 +8,11 @@ export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
   const [fecha, setFecha] = useState("");
   const [cvv, setCvv] = useState("");
   const [nombre, setNombre] = useState("");
+  const [notificacion, setNotificacion] = useState({ mostrar: false, tipo: 'error', mensaje: '' });
+
+  const lanzarNotificacion = (mensaje) => {
+    setNotificacion({ mostrar: true, tipo: 'error', mensaje });
+  };
 
   // La tarjeta no puede pasar de 16 números
   const handleTarjeta = (e) => {
@@ -41,47 +47,42 @@ export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
   // Botón pagar
   const handlePagar = () => {
 
-  if (!tarjeta || !fecha || !cvv || !nombre) {
-    alert("Completa todos los campos");
-    return;
-  }
+    if (!tarjeta || !fecha || !cvv || !nombre) {
+      lanzarNotificacion("Completa todos los campos");
+      return;
+    }
 
-  // Validar formato correcto MM/YY
-  if (!fecha.includes("/")) {
-    alert("Fecha inválida");
-    return;
-  }
+    // Validar formato correcto MM/YY
+    if (!fecha.includes("/")) {
+      lanzarNotificacion("Formato de fecha inválido (MM/YY)");
+      return;
+    }
 
-  const [mes, anio] = fecha.split("/");
+    const [mes, anio] = fecha.split("/");
+    const mesNumero = parseInt(mes);
+    const anioNumero = parseInt(anio);
 
-  const mesNumero = parseInt(mes);
-  const anioNumero = parseInt(anio);
+    if (mesNumero < 1 || mesNumero > 12) {
+      lanzarNotificacion("Mes inválido (01-12)");
+      return;
+    }
 
-  if (mesNumero < 1 || mesNumero > 12) {
-    alert("Mes inválido. Debe estar entre 01 y 12");
-    return;
-  }
+    const hoy = new Date();
+    const anioActual = hoy.getFullYear() % 100; 
+    const mesActual = hoy.getMonth() + 1;
 
-  const hoy = new Date();
-  const anioActual = hoy.getFullYear() % 100; 
-  const mesActual = hoy.getMonth() + 1;
+    // Validar vencimiento
+    if (anioNumero < anioActual || (anioNumero === anioActual && mesNumero < mesActual)) {
+      lanzarNotificacion("La tarjeta está vencida");
+      return;
+    }
 
-  // Validar vencimiento
-  if (
-    anioNumero < anioActual ||
-    (anioNumero === anioActual && mesNumero < mesActual)
-  ) {
-    alert("La tarjeta está vencida");
-    return;
-  }
-
-  
-  onConfirmarPago();
-};
+    onConfirmarPago();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-md rounded-2xl p-6 space-y-4 shadow-xl">
+      <div className="bg-white w-full max-w-md rounded-2xl p-6 space-y-4 shadow-xl relative">
 
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -135,24 +136,18 @@ export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
 
         {/* Botones */}
         <div className="flex gap-3 pt-2">
-          <button
-            onClick={onClose}
-            className="flex-1 border rounded-xl py-3"
-          >
-            Cancelar
-          </button>
-
-          <button
-            onClick={handlePagar}
-            className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-bold"
-          >
-            Pagar
-          </button>
+          <button onClick={onClose} className="flex-1 border rounded-xl py-3">Cancelar</button>
+          <button onClick={handlePagar} className="flex-1 bg-blue-600 text-white rounded-xl py-3 font-bold">Pagar</button>
         </div>
 
+        {notificacion.mostrar && (
+          <Notification 
+            type="error" 
+            message={notificacion.mensaje} 
+            onClose={() => setNotificacion({ ...notificacion, mostrar: false })} 
+          />
+        )}
       </div>
     </div>
   );
 }
-
-

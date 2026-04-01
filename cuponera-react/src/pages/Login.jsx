@@ -1,42 +1,46 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
+import { Notification } from '../components/Notification';
 
 export function Login() {
 
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ correo: '', password: '' });
-    const [error, setError] = useState('');
+    const [notificacion, setNotificacion] = useState({ mostrar: false, tipo: 'success', mensaje: '' });
     const [loading, setLoading] = useState(false);
 
     //Conexión con el backend y api
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
         setLoading(true);
 
         try {
             const reponse = await api.post('/login', formData);
             localStorage.setItem('token', reponse.data.token);
             localStorage.setItem('user', JSON.stringify(reponse.data.cliente));
-            navigate('/mis-cupones');
+            
+            lanzarNotificacion('success', '¡Bienvenido de nuevo!');
+            setTimeout(() => navigate('/mis-cupones'), 1500);
         }
         catch (error) {
-            setError('Correo o contraseña incorrectos');
+            lanzarNotificacion('error', 'Correo o contraseña incorrectos');
         } finally {
             setLoading(false);
         }
     };
 
+    const lanzarNotificacion = (tipo, mensaje) => {
+        setNotificacion({ mostrar: true, tipo, mensaje });
+    };
+
+    const cerrarNotificacion = () => {
+        setNotificacion({ mostrar: false, tipo: '', mensaje: '' });
+    };
+
     return (
         <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg mt-10">
             <h2 className="text-2xl font-bold text-center mb-8">¡Bienvenido de vuelta!</h2>
-
-            {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                    {error}
-                </div>
-            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <input
@@ -63,6 +67,14 @@ export function Login() {
             <p className="mt-6 text-center text-sm text-gray-500">
                 ¿No tienes cuenta? <Link to="/register" className="text-blue-600 font-bold cursor-pointer">Regístrate</Link>
             </p>
+
+            {notificacion.mostrar && (
+                <Notification 
+                    type={notificacion.tipo} 
+                    message={notificacion.mensaje} 
+                    onClose={cerrarNotificacion} 
+                />
+            )}
         </div>
     );
 }

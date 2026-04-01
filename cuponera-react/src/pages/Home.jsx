@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { useNavigate } from 'react-router';
 import ModoPago from "./ModoPago";
-import Filtro from "../components/Filtro"; 
+import { Notification } from '../components/Notification';
 
 export function Home() {
     const navigate = useNavigate();
+    
+    // Aquí recibimos lo que el usuario escribe en el Navbar
+    const { busqueda } = useOutletContext(); 
+    
     const [rubros, setRubros] = useState([]);
     const [loading, setLoading] = useState(true);
     const [mostrarPago, setMostrarPago] = useState(false);
     const [ofertaSeleccionada, setOfertaSeleccionada] = useState(null);
-    
-    // nuevo estado de busqueda
-    const [busqueda, setBusqueda] = useState('');
+    const [notificacion, setNotificacion] = useState({ mostrar: false, tipo: 'success', mensaje: '' });
 
     const imagenesRubros = {
         'Restaurantes': '/images/respaldo-restaurant.jpeg',
         'Talleres': '/images/respaldo-talleres.jpeg',
         'Salones de Belleza': '/images/respaldo-belleza.jpeg',
-        'Entretenimiento': '/images/respaldo-entretenimiento.jpeg',
+        'Entretenimiento': '/images/respaldo-entertainment.jpeg',
         'Default': '/images/default-oferta.jpg'
     };
 
@@ -46,7 +48,11 @@ export function Home() {
             });
     }, []);
 
-    //  Logica para filtrado
+    const lanzarNotificacion = (tipo, mensaje) => {
+        setNotificacion({ mostrar: true, tipo, mensaje });
+    };
+
+    // El filtro ahora usa la 'busqueda' que viene del Navbar
     const rubrosFiltrados = rubros.map(rubro => {
         return {
             ...rubro,
@@ -66,21 +72,22 @@ export function Home() {
     const comprarCupon = async (ofertaId, precioOferta) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            alert('Debes iniciar sesión para comprar');
-            navigate('/login');
+            lanzarNotificacion('info', 'Debes iniciar sesión para comprar');
+            setTimeout(() => navigate('/login'), 2000);
             return;
         }
         try {
-            const response = await api.post('/cupones', {
+            await api.post('/cupones', {
                 oferta_id: ofertaId,
                 precio_pagado: precioOferta
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert(`¡Cupón comprado! Código: ${response.data.cupon.codigo}`);
-            navigate('/mis-cupones');
+            
+            lanzarNotificacion('success', '¡Cupón comprado con éxito!');
+            setTimeout(() => navigate('/mis-cupones'), 2000);
         } catch (error) {
-            alert(error.response?.data?.message || 'Error al comprar cupón');
+            lanzarNotificacion('error', error.response?.data?.message || 'Error al comprar cupón');
         }
     };
 
@@ -91,74 +98,70 @@ export function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50">
-            {/* Sección bienvenida */}
-            <div className="py-12 px-6 sm:py-20 text-center space-y-4">
-                <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 tracking-tighter italic uppercase">
-                    Explora las Ofertas
-                </h1>
-                <p className="text-gray-500 text-sm sm:text-lg max-w-xl mx-auto">
-                    Ahorra con los mejores cupones en El Salvador. Calidad garantizada en cada compra.
-                </p>
+        <div className="min-h-screen bg-white pb-20">
+            <div className="bg-blue-600 py-16 px-6 text-center mb-12">
+                <div className="max-w-3xl mx-auto space-y-4">
+                    <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-none">
+                        Ahorra en grande <br/> <span className="text-blue-200">vive mejor</span>
+                    </h1>
+                    <p className="text-blue-100 text-lg font-medium">
+                        Encuentra las mejores experiencias en El Salvador con descuentos exclusivos.
+                    </p>
+                </div>
             </div>
 
-            {/* Acá es donde se inicia el componente de Filtro*/}
-            <Filtro setBusqueda={setBusqueda} />
+            {/* AQUI ELIMINAMOS EL <Filtro /> VIEJO */}
 
-            <div className="max-w-7xl mx-auto px-4 pb-20 space-y-16">
-                {/* Se ocupa rubrosFiltrados para mejor resultados */}
+            <div className="max-w-7xl mx-auto px-4 space-y-16">
                 {rubrosFiltrados.length > 0 ? (
                     rubrosFiltrados.map(rubro => (
                         <section key={rubro.id} className="animate-fade-in">
-                            <div className="flex items-center mb-8">
-                                <h2 className="text-xl sm:text-2xl font-black text-gray-800 uppercase tracking-widest mr-4">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">
                                     {rubro.nombre}
                                 </h2>
-                                <div className="flex-1 h-0.5 bg-blue-600/10 rounded-full"></div>
+                                <span className="text-[10px] font-black bg-gray-100 px-3 py-1 rounded-full text-gray-400">
+                                    {rubro.ofertas.length} OFERTAS
+                                </span>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {rubro.ofertas.map(oferta => (
-                                    <div key={oferta.id} className="flex flex-col bg-white rounded-3xl sm:rounded-4xl border-2 border-gray-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                                        <div className="aspect-16/10 sm:h-56 relative bg-gray-200">
+                                    <div key={oferta.id} className="flex flex-col bg-white rounded-3xl border-2 border-gray-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                                        <div className="aspect-video relative bg-gray-200">
                                             <img
                                                 src={imagenesPorOferta[oferta.titulo] || imagenesRubros[rubro.nombre] || imagenesRubros['Default']}
                                                 alt={oferta.titulo}
                                                 className="w-full h-full object-cover"
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none';
-                                                    e.target.parentNode.style.backgroundColor = '#e5e7eb';
-                                                }}
                                             />
                                         </div>
 
-                                        <div className="p-5 sm:p-8 flex flex-col flex-1 space-y-4">
-                                            <div className="min-h-[70px]">
-                                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2">{oferta.titulo}</h3>
-                                                <p className="text-gray-400 text-xs sm:text-sm mt-1 line-clamp-2 italic">{oferta.descripcion}</p>
+                                        <div className="p-6 flex flex-col flex-1 space-y-4">
+                                            <div className="min-h-[60px]">
+                                                <h3 className="text-lg font-bold text-gray-900 leading-tight">{oferta.titulo}</h3>
+                                                <p className="text-gray-400 text-xs mt-1 italic">{oferta.descripcion}</p>
                                             </div>
 
                                             <div className="flex items-center justify-between pt-2">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] text-gray-300 line-through font-bold">ANTES ${oferta.precio_regular}</span>
-                                                    <span className="text-2xl sm:text-3xl font-black text-green-500 tracking-tighter">${oferta.precio_oferta}</span>
+                                                    <span className="text-[10px] text-gray-300 line-through font-bold uppercase">${oferta.precio_regular}</span>
+                                                    <span className="text-3xl font-black text-green-500 tracking-tighter">${oferta.precio_oferta}</span>
                                                 </div>
                                                 <button
                                                     onClick={() => {
                                                         setOfertaSeleccionada(oferta);
                                                         setMostrarPago(true);
                                                     }}
-                                                    className="bg-blue-600 hover:bg-black text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95"
+                                                    className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all"
                                                 >
                                                     Comprar
                                                 </button>
                                             </div>
                                             <div className="pt-4 border-t border-gray-50 flex justify-between text-[9px] font-black text-gray-300 uppercase">
                                                 <span className="flex items-center">
-                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                                     Vence: {oferta.fecha_fin}
                                                 </span>
-                                                <span className="text-orange-400">Vigente</span>
+                                                <span className="text-orange-400">Disponible</span>
                                             </div>
                                         </div>
                                     </div>
@@ -167,17 +170,25 @@ export function Home() {
                         </section>
                     ))
                 ) : (
-                    // Por si no hay cupones en la busqueda
-                    <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200">
-                        <p className="text-gray-400 font-medium">No encontramos ofertas que coincidan con tu búsqueda 😅</p>
+                    <div className="text-center py-24 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-100">
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No hay ofertas para esa búsqueda</p>
                     </div>
                 )}
             </div>
+
             {mostrarPago && ofertaSeleccionada && (
                 <ModoPago
                     oferta={ofertaSeleccionada}
                     onClose={() => setMostrarPago(false)}
                     onConfirmarPago={confirmarPagoYComprar}
+                />
+            )}
+
+            {notificacion.mostrar && (
+                <Notification 
+                    type={notificacion.tipo} 
+                    message={notificacion.mensaje} 
+                    onClose={() => setNotificacion({ ...notificacion, mostrar: false })} 
                 />
             )}
         </div>
