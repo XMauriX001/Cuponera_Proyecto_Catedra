@@ -17,10 +17,10 @@ class Rubro extends Model
     public function ofertas()
     {
         return $this->hasManyThrough(
-            Oferta::class,    // El modelo final al que queremos llegar
-            Empresa::class,   // El modelo intermedio
-            'rubro_id',       // Clave foránea en la tabla empresas
-            'empresa_id',     // Clave foránea en la tabla ofertas 
+            Oferta::class,    
+            Empresa::class,   
+            'rubro_id',       
+            'empresa_id', 
             'id',
             'id'
         );

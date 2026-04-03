@@ -28,12 +28,11 @@ class Oferta extends Model
     ];
 
     /**
-     * Relación: Una oferta pertenece a un Rubro A TRAVÉS de la Empresa.
+     * Relación: Una oferta pertenece a un Rubro directamente.
      */
     public function rubro()
     {
-        //accedemos mediante la empresa:
-        return $this->empresa->rubro();
+        return $this->belongsTo(Rubro::class, 'rubro_id');
     }
 
     /**

@@ -4,143 +4,81 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Oferta;
+use Carbon\Carbon;
 
 class OfertaSeeder extends Seeder
 {
     public function run(): void
     {
-        $ofertas = [
-            // Pizza Hut (Restaurantes = rubro_id 1)
-            [
-                'empresa_id' => 1,
-                'rubro_id' => 1,
-                'titulo' => '2x1 en Pizzas Medianas',
-                'precio_regular' => 25.00,
-                'precio_oferta' => 15.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-02-28',
-                'fecha_limite_cupon' => '2026-03-15',
-                'cantidad_limite' => 100,
-                'descripcion' => 'Lleva 2 pizzas medianas al precio de 1',
-                'otros_detalles' => 'Válido de lunes a jueves',
-                'estado' => 'aprobada',
-            ],
-            [
-                'empresa_id' => 1,
-                'rubro_id' => 1,
-                'titulo' => 'Combo Familiar',
-                'precio_regular' => 35.00,
-                'precio_oferta' => 22.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-02-28',
-                'fecha_limite_cupon' => '2026-03-15',
-                'cantidad_limite' => null,
-                'descripcion' => '1 Pizza grande + 8 alitas + 2 litros de bebida',
-                'otros_detalles' => 'Disponible todos los días',
-                'estado' => 'aprobada',
-            ],
-            [
-                'empresa_id' => 1,
-                'rubro_id' => 1,
-                'titulo' => 'Combo Personal',
-                'precio_regular' => 10.00,
-                'precio_oferta' => 4.99,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-03-01',
-                'fecha_limite_cupon' => '2026-03-15',
-                'cantidad_limite' => 150,
-                'descripcion' => '1 Pizza personal + bebida + acompañamiento',
-                'otros_detalles' => 'Ideal para una persona',
-                'estado' => 'aprobada',
-            ],
+        $ahora = Carbon::now();
+        $ofertas = [];
 
-            // Salon Glamour (Salones de Belleza = rubro_id 2)
-            [
-                'empresa_id' => 2,
-                'rubro_id' => 2,
-                'titulo' => 'Corte + Tinte',
-                'precio_regular' => 80.00,
-                'precio_oferta' => 45.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-02-28',
-                'fecha_limite_cupon' => '2026-03-15',
-                'cantidad_limite' => 50,
-                'descripcion' => 'Corte de cabello + aplicación de tinte',
-                'otros_detalles' => 'Previa cita',
-                'estado' => 'aprobada',
+        $datosRubros = [
+            1 => [ 
+                'empresa_id' => 1,
+                'titulos' => ['2x1 en Pizzas Medianas', 'Combo Familiar Gigante', 'Almuerzo Ejecutivo'],
+                'precios' => [[25, 15], [35, 22], [12, 7.99]]
             ],
-            [
+            2 => [
                 'empresa_id' => 2,
-                'rubro_id' => 2,
-                'titulo' => 'Manicure + Pedicure',
-                'precio_regular' => 30.00,
-                'precio_oferta' => 18.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-02-28',
-                'fecha_limite_cupon' => '2026-03-15',
-                'cantidad_limite' => 80,
-                'descripcion' => 'Servicio completo de manos y pies',
-                'otros_detalles' => 'Incluye esmaltado',
-                'estado' => 'aprobada',
+                'titulos' => ['Corte + Tinte Global', 'Manicure y Pedicure Spa', 'Alisado de Keratina'],
+                'precios' => [[80, 45], [30, 18], [120, 65]]
             ],
-            [
-                'empresa_id' => 2,
-                'rubro_id' => 2,
-                'titulo' => 'Alisado Permanente + Corte',
-                'precio_regular' => 60.00,
-                'precio_oferta' => 29.99,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-03-05',
-                'fecha_limite_cupon' => '2026-03-20',
-                'cantidad_limite' => 40,
-                'descripcion' => 'Tratamiento completo de hidratación y corte de puntas',
-                'otros_detalles' => 'Incluye productos profesionales',
-                'estado' => 'aprobada',
-            ],
+            3 => [ 
+                'empresa_id' => 3,
+                'titulos' => ['Pack 2 Entradas + Combo', 'Cumpleaños en el Cine', 'Pase Anual VIP'],
+                'precios' => [[20, 12.50], [150, 99], [300, 199]]
+            ]
+        ];
 
-            // Cinemark (Entretenimiento = rubro_id 3)
-            [
-                'empresa_id' => 3,
-                'rubro_id' => 3,
-                'titulo' => '2 Boletos + Palomitas',
-                'precio_regular' => 18.00,
-                'precio_oferta' => 12.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-02-28',
-                'fecha_limite_cupon' => '2026-03-15',
-                'cantidad_limite' => 200,
-                'descripcion' => '2 entradas de cine + 1 palomitas mediana',
-                'otros_detalles' => 'Válido de lunes a jueves',
-                'estado' => 'aprobada',
-            ],
-            [
-                'empresa_id' => 3,
-                'rubro_id' => 3,
-                'titulo' => '4 Boletos + Combo Familiar',
-                'precio_regular' => 40.00,
-                'precio_oferta' => 25.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-03-10',
-                'fecha_limite_cupon' => '2026-03-20',
-                'cantidad_limite' => 100,
-                'descripcion' => 'Entradas válidas para cualquier función 2D + combo gigante',
-                'otros_detalles' => 'Incluye 2 palomitas grandes y 4 bebidas',
-                'estado' => 'aprobada',
-            ],
-            [
-                'empresa_id' => 3,
-                'rubro_id' => 3,
-                'titulo' => 'Pase VIP Todo el Día',
-                'precio_regular' => 30.00,
-                'precio_oferta' => 15.00,
-                'fecha_inicio' => '2026-02-01',
-                'fecha_fin' => '2026-03-12',
-                'fecha_limite_cupon' => '2026-03-25',
-                'cantidad_limite' => 75,
-                'descripcion' => 'Acceso ilimitado a juegos mecánicos y área de comida',
-                'otros_detalles' => 'No incluye juegos de habilidad',
-                'estado' => 'aprobada',
-            ],
+
+        foreach ($datosRubros as $rubroId => $info) {
+            for ($i = 0; $i < 3; $i++) {
+                $ofertas[] = [
+                    'empresa_id' => $info['empresa_id'],
+                    'rubro_id' => $rubroId,
+                    'titulo' => $info['titulos'][$i],
+                    'precio_regular' => $info['precios'][$i][0],
+                    'precio_oferta' => $info['precios'][$i][1],
+                    'fecha_inicio' => $ahora->copy()->subDays(rand(1, 5))->format('Y-m-d'),
+                    'fecha_fin' => $ahora->copy()->addDays(rand(10, 20))->format('Y-m-d'),
+                    'fecha_limite_cupon' => $ahora->copy()->addDays(30)->format('Y-m-d'),
+                    'cantidad_limite' => 100,
+                    'descripcion' => 'Descripción de prueba para ' . $info['titulos'][$i],
+                    'otros_detalles' => 'Válido en todas las sucursales',
+                    'estado' => 'aprobada', 
+                ];
+            }
+        }
+
+        $ofertas[] = [
+            'empresa_id' => 1,
+            'rubro_id' => 1,
+            'titulo' => 'Pizza Gratis de por vida',
+            'precio_regular' => 1000,
+            'precio_oferta' => 0,
+            'fecha_inicio' => $ahora->format('Y-m-d'),
+            'fecha_fin' => $ahora->addDays(5)->format('Y-m-d'),
+            'fecha_limite_cupon' => $ahora->addDays(10)->format('Y-m-d'),
+            'cantidad_limite' => 1,
+            'descripcion' => 'Esta oferta será rechazada por el admin de la cuponera',
+            'otros_detalles' => 'No cumple las políticas',
+            'estado' => 'rechazada', 
+        ];
+
+        $ofertas[] = [
+            'empresa_id' => 2, 
+            'rubro_id' => 2,
+            'titulo' => 'Cambio de look extremo gratis',
+            'precio_regular' => 50,
+            'precio_oferta' => 0,
+            'fecha_inicio' => $ahora->format('Y-m-d'),
+            'fecha_fin' => $ahora->addDays(5)->format('Y-m-d'),
+            'fecha_limite_cupon' => $ahora->addDays(10)->format('Y-m-d'),
+            'cantidad_limite' => 5,
+            'descripcion' => 'Oferta de prueba rechazada',
+            'otros_detalles' => 'Faltan detalles técnicos',
+            'estado' => 'rechazada',
         ];
 
         foreach ($ofertas as $oferta) {
