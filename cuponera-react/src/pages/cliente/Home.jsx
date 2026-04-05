@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import ModoPago from "./ModoPago";
-import { Notification } from '../components/Notification';
+import api from '../../api/axios';
+import ModoPago from "../ModoPago";
+import { Notification } from '../../components/Notification';
 
 export function Home() {
     const navigate = useNavigate();

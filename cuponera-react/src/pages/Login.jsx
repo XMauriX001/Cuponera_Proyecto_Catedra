@@ -12,23 +12,35 @@ export function Login() {
 
     //Conexión con el backend y api
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-        try {
-            const reponse = await api.post('/login', formData);
-            localStorage.setItem('token', reponse.data.token);
-            localStorage.setItem('user', JSON.stringify(reponse.data.cliente));
-            
-            lanzarNotificacion('success', '¡Bienvenido de nuevo!');
-            setTimeout(() => navigate('/mis-cupones'), 1500);
-        }
-        catch (error) {
-            lanzarNotificacion('error', 'Correo o contraseña incorrectos');
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+        const reponse = await api.post('/login', formData);
+        const user = reponse.data.user; // El usuario que manda tu amigo con Spatie
+        const token = reponse.data.token;
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        lanzarNotificacion('success', '¡Bienvenido de nuevo!');
+
+        // Lo direcciona en base a su rol
+        const role = user.roles[0].name;
+
+        setTimeout(() => {
+            if (role === 'admin') navigate('/admin');
+            else if (role === 'empresa') navigate('/empresa');
+            else if (role === 'empleado') navigate('/empleado');
+            else navigate('/'); // Por defecto al home de cliente
+        }, 1500);
+
+    } catch (error) {
+        lanzarNotificacion('error', 'Correo o contraseña incorrectos');
+    } finally {
+        setLoading(false);
+    }
+};
 
     const lanzarNotificacion = (tipo, mensaje) => {
         setNotificacion({ mostrar: true, tipo, mensaje });
