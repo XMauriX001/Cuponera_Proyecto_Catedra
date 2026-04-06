@@ -19,6 +19,7 @@ use App\Http\Controllers\PasswordResetController;
 // Rutas públicas 
 Route::get('/ofertas', [OfertaController::class, 'index']);
 Route::get('/ofertas/{id}', [OfertaController::class, 'show']);
+Route::get('/rubros', [AdminRubroController::class, 'index']);
 Route::post('/register', [ClienteController::class, 'register']);
 Route::post('/login', [ClienteController::class, 'login']);
 Route::post('/password/forgot-user', [PasswordResetController::class, 'sendResetLinkUser']);

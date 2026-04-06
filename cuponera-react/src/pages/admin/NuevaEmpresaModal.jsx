@@ -1,124 +1,184 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 
-export default function NuevaEmpresaModal({ isOpen, onClose, onSave }) {
-  const [formData, setFormData] = useState({
+export default function NuevaEmpresaModal({ isOpen, onClose, onSave, empresaParaEditar }) {
+  const estadoInicial = {
     nombre: '',
-    correo: '',
-    telefono: '',
+    codigo: '',
     direccion: '',
-    comision: '',
-    rubro_id: ''
-  });
+    nombre_contacto: '',
+    telefono: '',
+    correo: '',
+    password: '',
+    rubro_id: '',
+    porcentaje_comision: ''
+  };
 
+  const [formData, setFormData] = useState(estadoInicial);
   const [rubros, setRubros] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // Si empresaParaEditar tiene datos, los cargamos en el formulario
   useEffect(() => {
     if (isOpen) {
-      api.get('/admin/rubros').then(res => setRubros(res.data));
+      api.get('admin/rubros').then(res => setRubros(res.data));
+      
+      if (empresaParaEditar) {
+        setFormData({
+          ...empresaParaEditar,
+          password: '' // No mostramos la contraseña por seguridad
+        });
+      } else {
+        setFormData(estadoInicial);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, empresaParaEditar]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await api.post('/admin/empresas', formData);
+      if (empresaParaEditar) {
+        // Modo Edición: Usamos PUT y el ID de la empresa
+        await api.put(`admin/empresas/${empresaParaEditar.id}`, formData);
+      } else {
+        // Modo Creación: Usamos POST
+        await api.post('admin/empresas', formData);
+      }
       onSave();
       onClose();
-      setFormData({ nombre: '', correo: '', telefono: '', direccion: '', comision: '', rubro_id: '' });
     } catch (error) {
-      console.error("Error al registrar empresa", error);
+      console.error("Error al procesar empresa", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up border border-gray-100">
-        <div className="p-8 border-b border-gray-50 flex justify-between items-center">
-          <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Registrar Socio Comercial</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-black font-bold">✕</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-white w-full max-w-2xl max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-gray-100">
+        
+        <div className="p-6 md:p-8 border-b border-gray-50 flex justify-between items-center bg-white">
+          <div>
+            <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">
+              {empresaParaEditar ? 'Editar Empresa' : 'Alta de Socio Comercial'}
+            </h2>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-black">✕</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-2">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nombre de la Empresa</label>
-            <input 
-              type="text" required
-              className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-              placeholder="Ej: Pizza Hut El Salvador"
-              onChange={e => setFormData({...formData, nombre: e.target.value})}
-            />
-          </div>
+        <div className="overflow-y-auto p-6 md:p-8 custom-scrollbar">
+          <form id="empresaForm" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="md:col-span-1 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Nombre</label>
+              <input 
+                type="text" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.nombre}
+                onChange={e => setFormData({...formData, nombre: e.target.value})}
+              />
+            </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Correo de Contacto</label>
-            <input 
-              type="email" required
-              className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-              placeholder="admin@empresa.com"
-              onChange={e => setFormData({...formData, correo: e.target.value})}
-            />
-          </div>
+            <div className="md:col-span-1 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Código</label>
+              <input 
+                type="text" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.codigo}
+                onChange={e => setFormData({...formData, codigo: e.target.value})}
+              />
+            </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Teléfono</label>
-            <input 
-              type="text" required
-              className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-              placeholder="2222-2222"
-              onChange={e => setFormData({...formData, telefono: e.target.value})}
-            />
-          </div>
+            <div className="md:col-span-1 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Contacto</label>
+              <input 
+                type="text" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.nombre_contacto}
+                onChange={e => setFormData({...formData, nombre_contacto: e.target.value})}
+              />
+            </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Dirección Fiscal</label>
-            <input 
-              type="text" required
-              className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-              placeholder="Calle principal, San Salvador..."
-              onChange={e => setFormData({...formData, direccion: e.target.value})}
-            />
-          </div>
+            <div className="md:col-span-1 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Teléfono</label>
+              <input 
+                type="text" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.telefono}
+                onChange={e => setFormData({...formData, telefono: e.target.value})}
+              />
+            </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Comisión (%)</label>
-            <input 
-              type="number" step="0.01" required
-              className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-              placeholder="Ej: 10.5"
-              onChange={e => setFormData({...formData, comision: e.target.value})}
-            />
-          </div>
+            <div className="md:col-span-1 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Correo</label>
+              <input 
+                type="email" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.correo}
+                onChange={e => setFormData({...formData, correo: e.target.value})}
+              />
+            </div>
 
-          <div>
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Rubro</label>
-            <select 
-              required
-              className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-100 outline-none appearance-none"
-              onChange={e => setFormData({...formData, rubro_id: e.target.value})}
-            >
-              <option value="">Seleccionar rubro...</option>
-              {rubros.map(r => <option key={r.id} value={r.id}>{r.nombre}</option>)}
-            </select>
-          </div>
+            <div className="md:col-span-1 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">
+                Contraseña {empresaParaEditar && '(Opcional)'}
+              </label>
+              <input 
+                type="password" required={!empresaParaEditar}
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.password}
+                onChange={e => setFormData({...formData, password: e.target.value})}
+              />
+            </div>
 
-          <div className="md:col-span-2 pt-4 flex gap-4">
-            <button 
-              type="button" onClick={onClose}
-              className="flex-1 bg-gray-100 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-200 transition-all uppercase text-[10px] tracking-widest"
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit"
-              className="flex-1 bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-black transition-all shadow-lg shadow-orange-100 uppercase text-[10px] tracking-widest"
-            >
-              Dar de Alta Empresa
-            </button>
-          </div>
-        </form>
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Dirección</label>
+              <input 
+                type="text" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.direccion}
+                onChange={e => setFormData({...formData, direccion: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Comisión %</label>
+              <input 
+                type="number" step="0.01" required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.porcentaje_comision}
+                onChange={e => setFormData({...formData, porcentaje_comision: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Rubro</label>
+              <select 
+                required
+                className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none"
+                value={formData.rubro_id}
+                onChange={e => setFormData({...formData, rubro_id: e.target.value})}
+              >
+                <option value="">Seleccionar...</option>
+                {rubros.map(r => <option key={r.id} value={r.id}>{r.nombre}</option>)}
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div className="p-6 md:p-8 bg-gray-50/50 border-t border-gray-50 flex flex-col md:flex-row gap-3">
+          <button type="button" onClick={onClose} className="w-full md:flex-1 bg-white text-gray-400 font-bold py-4 rounded-2xl border border-gray-200">
+            Cerrar
+          </button>
+          <button 
+            form="empresaForm" type="submit" disabled={loading}
+            className="w-full md:flex-2 bg-blue-600 text-white font-black py-4 rounded-2xl disabled:opacity-50"
+          >
+            {loading ? 'Guardando...' : (empresaParaEditar ? 'Guardar Cambios' : 'Registrar Empresa')}
+          </button>
+        </div>
       </div>
     </div>
   );

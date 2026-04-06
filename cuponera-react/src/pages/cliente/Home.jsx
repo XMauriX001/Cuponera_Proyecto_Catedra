@@ -20,7 +20,7 @@ export function Home() {
         'Restaurantes': '/images/respaldo-restaurant.jpeg',
         'Talleres': '/images/respaldo-talleres.jpeg',
         'Salones de Belleza': '/images/respaldo-belleza.jpeg',
-        'Entretenimiento': '/images/respaldo-entertainment.jpeg',
+        'Entretenimiento': '/images/respaldo-entretenimiento.jpeg',
         'Default': '/images/default-oferta.jpg'
     };
 

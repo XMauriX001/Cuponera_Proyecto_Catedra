@@ -12,7 +12,8 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex min-h-screen bg-gray-50/50">
-      {/* Menu lateral */}
+      
+      {/* menu lateral */}
       <aside className="w-64 bg-white border-r border-gray-100 hidden md:flex flex-col sticky top-0 h-screen">
         <div className="p-8">
           <Link to="/" className="text-xl font-black text-blue-600 tracking-tighter">
@@ -20,26 +21,31 @@ export default function DashboardLayout() {
           </Link>
         </div>
 
+        {/* navegacion por roles */}
         <nav className="flex-1 px-4 space-y-2">
-          {role === 'admin' && (
+          
+          {/* opciones para administrador general */}
+          {role === 'administrador' && (
             <>
-              <Link to="/admin" className="block p-4 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">Estadísticas Globales</Link>
-              <Link to="/admin/empresas" className="block p-4 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">Empresas</Link>
+              <Link to="/admin" className="block p-4 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">Directorio Empresas</Link>
             </>
           )}
 
-          {role === 'empresa' && (
+          {/* opciones para administrador de empresa */}
+          {role === 'admin_empresa' && (
             <>
               <Link to="/empresa" className="block p-4 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">Mis Ofertas</Link>
               <Link to="/empresa/empleados" className="block p-4 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">Mis Empleados</Link>
             </>
           )}
 
+          {/* opciones para empleado */}
           {role === 'empleado' && (
             <Link to="/empleado" className="block p-4 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all">Validar Cupón</Link>
           )}
         </nav>
 
+        {/* boton de salida */}
         <div className="p-4 border-t border-gray-50">
           <button 
             onClick={handleLogout}
@@ -50,9 +56,10 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Contenido*/}
+      {/* cuerpo principal */}
       <main className="flex-1 flex flex-col">
-        {/* Topbar */}
+        
+        {/* cabecera superior */}
         <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-10">
           <div>
             <h2 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">Gestión</h2>
@@ -71,11 +78,12 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        {/* Contenido Dinamico */}
+        {/* vista de la pagina actual */}
         <div className="p-8">
           <Outlet />
         </div>
       </main>
+
     </div>
   );
 }

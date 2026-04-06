@@ -16,7 +16,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         
-        {/* rutas publicas y de clientes */}
+        {/* rutas para clientes */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
@@ -24,22 +24,19 @@ function App() {
           <Route path="mis-cupones" element={<Cupones />} />
         </Route>
 
-        {/* rutas protegidas para administracion */}
-        <Route element={<ProtectedRoute allowedRoles={['admin', 'empresa', 'empleado']} />}>
+        {/* rutas para administracion */}
+        <Route element={<ProtectedRoute allowedRoles={['administrador', 'admin_empresa', 'empleado']} />}>
           <Route element={<DashboardLayout />}>
             
-            {/* panel de administrador general */}
-            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route element={<ProtectedRoute allowedRoles={['administrador']} />}>
               <Route path="admin" element={<GestionEmpresas />} />
             </Route>
 
-            {/* panel de empresa */}
-            <Route element={<ProtectedRoute allowedRoles={['empresa']} />}>
+            <Route element={<ProtectedRoute allowedRoles={['admin_empresa']} />}>
               <Route path="empresa" element={<MisOfertas />} />
               <Route path="empresa/empleados" element={<MisEmpleados />} />
             </Route>
 
-            {/* panel de empleado */}
             <Route element={<ProtectedRoute allowedRoles={['empleado']} />}>
               <Route path="empleado" element={<ValidarCupon />} />
             </Route>
