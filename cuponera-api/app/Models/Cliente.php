@@ -36,15 +36,8 @@ class Cliente extends Authenticatable
         return $this->correo;
     }
 
-    /**
-     * Personaliza la URL para el frontend de React
-     */
-    public function sendPasswordResetNotification($token)
-    {
-        $url = 'http://localhost:5173/reset-password?token=' . $token . '&email=' . urlencode($this->correo);
 
-        $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($url));
-    }
+
 
 
     public function cupones()

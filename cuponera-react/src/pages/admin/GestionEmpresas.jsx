@@ -6,9 +6,10 @@ export default function GestionEmpresas() {
   const [empresas, setEmpresas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalAbierto, setModalAbierto] = useState(false);
-  // Nuevo estado para saber cuál empresa editar
+  // guardamos aca la empresa que hayan tocado para poder editarla despues
   const [empresaParaEditar, setEmpresaParaEditar] = useState(null);
 
+  // traemos toda la lista de sucursales activas desde el back
   const cargarEmpresas = useCallback(() => {
     setLoading(true);
     api.get('/admin/empresas')
@@ -26,13 +27,13 @@ export default function GestionEmpresas() {
     cargarEmpresas();
   }, [cargarEmpresas]);
 
-  // Función para abrir el modal en modo creación
+  // abrimos el modal en blanco para que metan una sucursal nueva
   const manejarNuevaEmpresa = () => {
     setEmpresaParaEditar(null);
     setModalAbierto(true);
   };
 
-  // Función para abrir el modal en modo edición
+  // preparamos el modal de edicion con los datos que ya teniamos
   const manejarEdicion = (empresa) => {
     setEmpresaParaEditar(empresa);
     setModalAbierto(true);
@@ -116,7 +117,7 @@ export default function GestionEmpresas() {
         isOpen={modalAbierto} 
         onClose={() => setModalAbierto(false)} 
         onSave={cargarEmpresas} 
-        empresaParaEditar={empresaParaEditar} // Pasamos la empresa seleccionada
+        empresaParaEditar={empresaParaEditar} // aca le pasamos la data al modal por si es edicion
       />
     </div>
   );

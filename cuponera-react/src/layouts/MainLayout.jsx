@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import NavBar from '../components/NavBar'; 
+import Navbar from '../components/Navbar'; 
 
 export function MainLayout() {
     const [busqueda, setBusqueda] = useState('');
@@ -9,7 +9,7 @@ export function MainLayout() {
         <div className="flex flex-col min-h-screen bg-gray-50">
             {/* Pasamos los estados al NavBar */}
             <header>
-                <NavBar busqueda={busqueda} setBusqueda={setBusqueda} />
+                <Navbar busqueda={busqueda} setBusqueda={setBusqueda} />
             </header>
 
             <main className="flex-grow">

@@ -25,8 +25,15 @@ export default function NuevaEmpresaModal({ isOpen, onClose, onSave, empresaPara
       
       if (empresaParaEditar) {
         setFormData({
-          ...empresaParaEditar,
-          password: '' // No mostramos la contraseña por seguridad
+          nombre: empresaParaEditar.nombre || '',
+          codigo: empresaParaEditar.codigo || '',
+          direccion: empresaParaEditar.direccion || '',
+          nombre_contacto: empresaParaEditar.nombre_contacto || '',
+          telefono: empresaParaEditar.telefono || '',
+          correo: empresaParaEditar.correo || '',
+          password: '',
+          rubro_id: empresaParaEditar.rubro_id || '',
+          porcentaje_comision: empresaParaEditar.porcentaje_comision || ''
         });
       } else {
         setFormData(estadoInicial);
@@ -38,12 +45,18 @@ export default function NuevaEmpresaModal({ isOpen, onClose, onSave, empresaPara
     e.preventDefault();
     setLoading(true);
     try {
+      // Solo enviamos los campos del formulario, no todo el objeto empresa
+      const dataToSend = { ...formData };
+      
+      // Si estamos editando y el password está vacío, no lo enviamos
+      if (empresaParaEditar && !dataToSend.password) {
+        delete dataToSend.password;
+      }
+
       if (empresaParaEditar) {
-        // Modo Edición: Usamos PUT y el ID de la empresa
-        await api.put(`admin/empresas/${empresaParaEditar.id}`, formData);
+        await api.put(`admin/empresas/${empresaParaEditar.id}`, dataToSend);
       } else {
-        // Modo Creación: Usamos POST
-        await api.post('admin/empresas', formData);
+        await api.post('admin/empresas', dataToSend);
       }
       onSave();
       onClose();

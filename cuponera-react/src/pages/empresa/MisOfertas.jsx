@@ -8,6 +8,7 @@ export default function MisOfertas() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [ofertaParaEditar, setOfertaParaEditar] = useState(null);
 
+  // traemos todas las ofertas de la empresa que esta con login activo
   const cargarOfertas = useCallback(() => {
     setLoading(true);
     api.get('empresa/ofertas')
@@ -25,14 +26,29 @@ export default function MisOfertas() {
     cargarOfertas();
   }, [cargarOfertas]);
 
+  // abrimos el modal vacio para empezar a crear una oferta desde cero
   const manejarNuevaOferta = () => {
     setOfertaParaEditar(null);
     setModalAbierto(true);
   };
 
+  // preparamos el modal con los datos seleccionados para editar algo
   const manejarEdicion = (oferta) => {
     setOfertaParaEditar(oferta);
     setModalAbierto(true);
+  };
+
+  // solo dejamos que editen si todavia estan en espera o se la rechazaron
+  const esEditable = (estado) => ['rechazada', 'en_espera'].includes(estado);
+
+  const estiloEstado = (estado) => {
+    switch (estado) {
+      case 'aprobada': return 'bg-green-50 text-green-600';
+      case 'rechazada': return 'bg-red-50 text-red-600';
+      case 'en_espera': return 'bg-yellow-50 text-yellow-600';
+      case 'descartada': return 'bg-gray-100 text-gray-400';
+      default: return 'bg-gray-50 text-gray-500';
+    }
   };
 
   return (
@@ -79,15 +95,19 @@ export default function MisOfertas() {
                       <span className="text-[10px] text-gray-300 line-through ml-2 font-bold">${oferta.precio_regular}</span>
                     </td>
                     <td className="p-6">
-                      <span className="bg-green-50 text-green-600 text-[9px] font-black px-3 py-1 rounded-full uppercase">{oferta.estado}</span>
+                      <span className={`${estiloEstado(oferta.estado)} text-[9px] font-black px-3 py-1 rounded-full uppercase`}>{oferta.estado?.replace('_', ' ')}</span>
                     </td>
                     <td className="p-6 text-right">
-                      <button 
-                        onClick={() => manejarEdicion(oferta)}
-                        className="bg-gray-900 text-white px-4 py-2 rounded-xl font-black text-[9px] uppercase hover:bg-blue-600 transition-all"
-                      >
-                        Editar
-                      </button>
+                      {esEditable(oferta.estado) ? (
+                        <button 
+                          onClick={() => manejarEdicion(oferta)}
+                          className="bg-gray-900 text-white px-4 py-2 rounded-xl font-black text-[9px] uppercase hover:bg-blue-600 transition-all"
+                        >
+                          Editar
+                        </button>
+                      ) : (
+                        <span className="text-[9px] text-gray-300 font-bold uppercase">—</span>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -106,18 +126,20 @@ export default function MisOfertas() {
                   <p className="font-bold text-lg text-gray-900 leading-tight">{oferta.titulo}</p>
                   <p className="text-[9px] text-blue-600 uppercase font-black">{oferta.rubro?.nombre || 'General'}</p>
                 </div>
-                <span className="bg-green-50 text-green-600 text-[8px] font-black px-2 py-1 rounded-full uppercase">{oferta.estado}</span>
+                <span className={`${estiloEstado(oferta.estado)} text-[8px] font-black px-2 py-1 rounded-full uppercase`}>{oferta.estado?.replace('_', ' ')}</span>
               </div>
               <div className="flex items-end gap-2">
                 <span className="text-2xl font-black text-green-500">${oferta.precio_oferta}</span>
                 <span className="text-xs text-gray-300 line-through mb-1">${oferta.precio_regular}</span>
               </div>
-              <button 
-                onClick={() => manejarEdicion(oferta)}
-                className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-black text-[10px] uppercase border border-gray-100"
-              >
-                Editar Oferta
-              </button>
+              {esEditable(oferta.estado) && (
+                <button 
+                  onClick={() => manejarEdicion(oferta)}
+                  className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-black text-[10px] uppercase border border-gray-100"
+                >
+                  Editar Oferta
+                </button>
+              )}
             </div>
           ))}
         </div>

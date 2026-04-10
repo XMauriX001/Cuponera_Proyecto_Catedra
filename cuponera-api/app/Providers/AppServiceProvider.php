@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
+            $type = $notifiable instanceof \App\Models\Cliente ? 'cliente' : 'user';
+            return 'http://localhost:5173/reset-password?token='.$token.'&email='.urlencode($notifiable->getEmailForPasswordReset()).'&type='.$type;
+        });
     }
 }

@@ -86,6 +86,6 @@ class PasswordResetController extends Controller
 
         return $status === Password::PASSWORD_RESET
             ? response()->json(['message' => 'Contraseña actualizada exitosamente'])
-            : response()->json(['message' => 'Token inválido o expirado'], 400);
+            : response()->json(['message' => __($status)], 400);
     }
 }

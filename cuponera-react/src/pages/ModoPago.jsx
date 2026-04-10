@@ -3,7 +3,7 @@ import { Notification } from '../components/Notification';
 
 export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
 
-  // Estados simples para inputs
+  // Estados simples para inputs de tarjeta
   const [tarjeta, setTarjeta] = useState("");
   const [fecha, setFecha] = useState("");
   const [cvv, setCvv] = useState("");
@@ -44,7 +44,7 @@ export default function ModoPago({ oferta, onClose, onConfirmarPago }) {
     setCvv(value);
   };
 
-  // Botón pagar
+  // aca verificamos que no vayan a pagar con tarjeta mala o vencida
   const handlePagar = () => {
 
     if (!tarjeta || !fecha || !cvv || !nombre) {

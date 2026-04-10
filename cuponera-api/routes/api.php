@@ -22,6 +22,12 @@ Route::get('/ofertas/{id}', [OfertaController::class, 'show']);
 Route::get('/rubros', [AdminRubroController::class, 'index']);
 Route::post('/register', [ClienteController::class, 'register']);
 Route::post('/login', [ClienteController::class, 'login']);
+
+// ruta necesaria para validar el token
+Route::get('/reset-password/{token}', function () {
+    return response()->json(['message' => 'api ready']);
+})->name('password.reset');
+
 Route::post('/password/forgot-user', [PasswordResetController::class, 'sendResetLinkUser']);
 Route::post('/password/reset-user', [PasswordResetController::class, 'resetUser']);
 Route::post('/password/forgot-cliente', [PasswordResetController::class, 'sendResetLinkCliente']);
@@ -30,6 +36,7 @@ Route::post('/password/reset-cliente', [PasswordResetController::class, 'resetCl
 // Rutas protegidas para clientes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/perfil', [ClienteController::class, 'perfil']);
+    Route::put('/perfil', [ClienteController::class, 'updateProfile']);
     Route::post('/logout', [ClienteController::class, 'logout']);
     Route::get('/cupones', [CuponController::class, 'index']);
     Route::post('/cupones', [CuponController::class, 'store']);
@@ -84,7 +91,3 @@ Route::middleware(['auth:sanctum', 'role:empleado'])->prefix('empleado')->group(
     Route::post('canje/verificar', [CanjeController::class, 'verificar']);
     Route::post('canje/canjear', [CanjeController::class, 'canjear']);
 });
-
-Route::get('/reset-password/{token}', function ($token) {
-    return redirect("http://localhost:5173/reset-password?token=$token");
-})->name('password.reset');

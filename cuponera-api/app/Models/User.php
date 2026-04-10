@@ -29,10 +29,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function sendPasswordResetNotification($token)
-    {
-        $url = 'http://localhost:5173/reset-password?token=' . $token . '&email=' . urlencode($this->email);
 
-        $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($url));
-    }
+
 }
