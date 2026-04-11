@@ -3,8 +3,9 @@ import axios from 'axios';
 const api = axios.create({
     baseURL: 'http://cuponera-api.test/api',
     headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        
     }
 });
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import { Notification } from '../components/Notification';
+import api from '../../api/axios';
+import { Notification } from '../../components/Notification';
 
 const Cupones = () => {
     const navigate = useNavigate();

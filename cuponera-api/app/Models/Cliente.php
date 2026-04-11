@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -27,7 +26,20 @@ class Cliente extends Authenticatable
         'password',
     ];
 
-    // Relación: Un cliente tiene muchos cupones
+    public function getEmailForPasswordReset()
+    {
+        return $this->correo;
+    }
+    
+    public function routeNotificationForMail($notification)
+    {
+        return $this->correo;
+    }
+
+
+
+
+
     public function cupones()
     {
         return $this->hasMany(Cupon::class, 'cliente_id');

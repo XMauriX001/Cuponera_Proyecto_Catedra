@@ -81,4 +81,31 @@ class ClienteController extends Controller
     {
         return response()->json($request->user());
     }
+
+    // Actualizar perfil del cliente
+    public function updateProfile(Request $request)
+    {
+        $cliente = $request->user();
+
+        $request->validate([
+            'nombres'    => 'sometimes|string|max:255',
+            'apellidos'  => 'sometimes|string|max:255',
+            'telefono'   => 'sometimes|string|max:20',
+            'direccion'  => 'sometimes|string',
+            'password'   => 'nullable|string|min:6',
+        ]);
+
+        $dataToUpdate = $request->only(['nombres', 'apellidos', 'telefono', 'direccion']);
+
+        if ($request->filled('password')) {
+            $dataToUpdate['password'] = Hash::make($request->password);
+        }
+
+        $cliente->update($dataToUpdate);
+
+        return response()->json([
+            'message' => 'Perfil actualizado exitosamente',
+            'cliente' => $cliente,
+        ]);
+    }
 }

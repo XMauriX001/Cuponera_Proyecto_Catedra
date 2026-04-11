@@ -17,7 +17,7 @@ export function Register() {
         setNotificacion({ mostrar: true, tipo, mensaje });
     };
 
-    // Función para dar formato al Teléfono (0000-0000)
+    // le damos forma bonita al telefono con su guion
     const handleTelefono = (e) => {
         let val = e.target.value.replace(/\D/g, '');
         if (val.length > 8) val = val.slice(0, 8);
@@ -25,7 +25,7 @@ export function Register() {
         setFormData({ ...formData, telefono: val });
     };
 
-    // Función para dar formato al DUI (00000000-0)
+    // aca obligamos a que el dui se vea bien presentable y real
     const handleDUI = (e) => {
         let val = e.target.value.replace(/\D/g, '');
         if (val.length > 9) val = val.slice(0, 9);
